@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سامان نکالیں - AgriVerse</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 sidebar">
+          <div class="sidebar-brand">
+            <i class="fas fa-warehouse fa-2x text-success mb-2"></i>
+            <h5 class="text-white">ایگری ورسے</h5>
+            <small class="text-light">گودام مینیجمنٹ</small>
+          </div>
+
+          <ul class="sidebar-nav">
+            <li>
+              <a href="dashboard.html"><i class="fas fa-home"></i> ڈیش بورڈ</a>
+            </li>
+            <li>
+              <a href="add-produce.html"
+                ><i class="fas fa-plus-circle"></i> نیا سامان درج کریں</a
+              >
+            </li>
+            <li>
+              <a href="inventory.html"
+                ><i class="fas fa-boxes"></i> موجودہ سامان</a
+              >
+            </li>
+            <li>
+              <a href="release-goods.html" class="active"
+                ><i class="fas fa-truck-loading"></i> سامان نکالیں</a
+              >
+            </li>
+            <li>
+              <a href="spoiled-goods.html"
+                ><i class="fas fa-trash-alt"></i> خراب مال رپورٹ</a
+              >
+            </li>
+            <li>
+              <a href="sales.html"
+                ><i class="fas fa-chart-bar"></i> فروخت کی تفصیل</a
+              >
+            </li>
+            <li>
+              <a href="#" onclick="logout()"
+                ><i class="fas fa-sign-out-alt"></i> لاگ آؤٹ</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 main-content">
+          <!-- Top Bar -->
+          <div
+            class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-4"
+          >
+            <h4 class="mb-0 text-primary">
+              <i class="fas fa-truck-loading me-2"></i>سامان نکالیں
+            </h4>
+            <button class="btn btn-success" onclick="showReleaseModal()">
+              <i class="fas fa-plus"></i> نیا سامان جاری کریں
+            </button>
+          </div>
+
+          <!-- Release Statistics -->
+          <div class="row mb-4">
+            <div class="col-xl-3 col-md-6">
+              <div class="card stats-card bg-primary text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6>آج جاری شدہ</h6>
+                      <h3 id="todayReleased">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-truck fa-2x opacity-50"></i>
+                    </div>
+                  </div>
+                  <small>آج کی تاریخ</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+              <div class="card stats-card bg-success text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6>اس ہفتہ جاری شدہ</h6>
+                      <h3 id="weekReleased">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-calendar-week fa-2x opacity-50"></i>
+                    </div>
+                  </div>
+                  <small>اس ہفتہ</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+              <div class="card stats-card bg-info text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6>منتقلی زیر التوا</h6>
+                      <h3 id="pendingTransfers">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-clock fa-2x opacity-50"></i>
+                    </div>
+                  </div>
+                  <small>منتقلی کی ضرورت</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6">
+              <div class="card stats-card bg-warning text-white">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <h6>کل مالیت</h6>
+                      <h3 id="totalValue">0</h3>
+                    </div>
+                    <div class="align-self-center">
+                      <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
+                    </div>
+                  </div>
+                  <small>جاری شدہ سامان</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Release Actions -->
+          <div class="card mb-4">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">
+                <i class="fas fa-bolt me-2 text-warning"></i>فوری عمل
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <button
+                    class="btn btn-outline-primary w-100 py-3"
+                    onclick="showReleaseModal()"
+                  >
+                    <i class="fas fa-truck-loading fa-2x mb-2"></i><br />
+                    سامان جاری کریں
+                  </button>
+                </div>
+                <div class="col-md-4">
+                  <button
+                    class="btn btn-outline-success w-100 py-3"
+                    onclick="showBulkReleaseModal()"
+                  >
+                    <i class="fas fa-boxes fa-2x mb-2"></i><br />
+                    بَلک جاری کریں
+                  </button>
+                </div>
+                <div class="col-md-4">
+                  <button
+                    class="btn btn-outline-info w-100 py-3"
+                    onclick="showTransferScheduleModal()"
+                  >
+                    <i class="fas fa-calendar-alt fa-2x mb-2"></i><br />
+                    منتقلی شیڈول کریں
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Release History -->
+          <div class="card">
+            <div
+              class="card-header bg-white d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">جاری شدہ سامان کی تاریخ</h5>
+              <div class="text-muted">
+                <span id="totalReleaseRecords">0</span> ریکارڈز
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Filters -->
+              <div class="row mb-3">
+                <div class="col-md-3">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="releaseStartDate"
+                    placeholder="سے تاریخ"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="releaseEndDate"
+                    placeholder="تک تاریخ"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <select class="form-select" id="releaseStatusFilter">
+                    <option value="">تمام حالتیں</option>
+                    <option value="جاری شدہ">جاری شدہ</option>
+                    <option value="منتقلی">منتقلی</option>
+                    <option value="پہنچا دیا">پہنچا دیا</option>
+                    <option value="منسوخ">منسوخ</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <button
+                    class="btn btn-primary w-100"
+                    onclick="loadReleaseHistory()"
+                  >
+                    <i class="fas fa-filter"></i> فلٹر کریں
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>ٹریکنگ نمبر</th>
+                      <th>تاریخ جاری</th>
+                      <th>پروڈکٹ</th>
+                      <th>مقدار</th>
+                      <th>خریدار</th>
+                      <th>منزل</th>
+                      <th>حالت</th>
+                      <th>عمل</th>
+                    </tr>
+                  </thead>
+                  <tbody id="releaseTable">
+                    <!-- Release data will be loaded here -->
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Empty State -->
+              <div
+                id="releaseEmptyState"
+                class="text-center py-5"
+                style="display: none"
+              >
+                <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">ابھی تک کوئی سامان جاری نہیں کیا گیا</h5>
+                <p class="text-muted">
+                  پہلا سامان جاری کرنے کے لیے اوپر دیے گئے بٹن پر کلک کریں
+                </p>
+                <button class="btn btn-success" onclick="showReleaseModal()">
+                  <i class="fas fa-plus me-1"></i> سامان جاری کریں
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Release Goods Modal -->
+    <div class="modal fade" id="releaseGoodsModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">سامان جاری کریں</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="releaseGoodsForm">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">سامان منتخب کریں *</label>
+                  <select class="form-select" id="releaseItemSelect" required>
+                    <option value="">سامان منتخب کریں</option>
+                    <!-- Items will be populated by JavaScript -->
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label"
+                    >جاری کی جانے والی مقدار (کلو) *</label
+                  >
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="releaseQuantity"
+                    min="1"
+                    required
+                  />
+                  <small class="form-text text-muted"
+                    >دستیاب مقدار:
+                    <span id="availableQuantity">0</span> کلو</small
+                  >
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">خریدار کا نام *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="buyerName"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">خریدار کا فون *</label>
+                  <input
+                    type="tel"
+                    class="form-control"
+                    id="buyerPhone"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">منزل (شہر) *</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="destinationCity"
+                    required
+                  />
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">تاریخ جاری *</label>
+                  <input
+                    type="datetime-local"
+                    class="form-control"
+                    id="releaseDateTime"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">ٹرانسپورٹ کی تفصیل</label>
+                <select class="form-select" id="transportType">
+                  <option value="">ٹرانسپورٹ کا طریقہ منتخب کریں</option>
+                  <option value="خود لے گئے">خود لے گئے</option>
+                  <option value="ٹرک">ٹرک</option>
+                  <option value="ون">ون</option>
+                  <option value="ریل">ریل</option>
+                  <option value="ہوائی">ہوائی</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">اضافی نوٹس</label>
+                <textarea
+                  class="form-control"
+                  id="releaseNotes"
+                  rows="3"
+                  placeholder="کوئی اضافی ہدایات یا نوٹس..."
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              منسوخ کریں
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              onclick="submitReleaseForm()"
+            >
+              سامان جاری کریں
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Release Details Modal -->
+    <div class="modal fade" id="releaseDetailsModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">جاری شدہ سامان کی تفصیلات</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body" id="releaseDetailsContent">
+            <!-- Details will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/demo-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/inventory.js"></script>
+
+    <script>
+      // Initialize release data
+      let releases = JSON.parse(localStorage.getItem("demoReleases") || "[]");
+
+      // Set default date/time
+      document.addEventListener("DOMContentLoaded", function () {
+        const now = new Date();
+        const localDateTime = new Date(
+          now.getTime() - now.getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .slice(0, 16);
+        document.getElementById("releaseDateTime").value = localDateTime;
+
+        loadReleaseHistory();
+        updateReleaseStats();
+      });
+
+      // Load release history
+      function loadReleaseHistory() {
+        try {
+          let filteredReleases = [...releases];
+
+          // Apply date filters
+          const startDate = document.getElementById("releaseStartDate").value;
+          const endDate = document.getElementById("releaseEndDate").value;
+          const statusFilter = document.getElementById(
+            "releaseStatusFilter"
+          ).value;
+
+          if (startDate) {
+            filteredReleases = filteredReleases.filter(
+              (release) => new Date(release.release_date) >= new Date(startDate)
+            );
+          }
+
+          if (endDate) {
+            filteredReleases = filteredReleases.filter(
+              (release) =>
+                new Date(release.release_date) <=
+                new Date(endDate + "T23:59:59")
+            );
+          }
+
+          if (statusFilter) {
+            filteredReleases = filteredReleases.filter(
+              (release) => release.status === statusFilter
+            );
+          }
+
+          // Sort by date (newest first)
+          filteredReleases.sort(
+            (a, b) => new Date(b.release_date) - new Date(a.release_date)
+          );
+
+          updateReleaseTable(filteredReleases);
+        } catch (error) {
+          console.error("Error loading release history:", error);
+          showReleaseAlert("ڈیٹا لوڈ کرنے میں خرابی", "error");
+        }
+      }
+
+      // Update release table
+      function updateReleaseTable(releasesData) {
+        const releaseTable = document.getElementById("releaseTable");
+        const emptyState = document.getElementById("releaseEmptyState");
+        const totalRecords = document.getElementById("totalReleaseRecords");
+
+        if (releasesData.length === 0) {
+          releaseTable.innerHTML = "";
+          if (emptyState) emptyState.style.display = "block";
+          if (totalRecords) totalRecords.textContent = "0";
+          return;
+        }
+
+        if (emptyState) emptyState.style.display = "none";
+        if (totalRecords) totalRecords.textContent = releasesData.length;
+
+        releaseTable.innerHTML = releasesData
+          .map(
+            (release) => `
+                <tr>
+                    <td>
+                        <strong>${release.tracking_number}</strong>
+                    </td>
+                    <td>${formatReleaseDate(release.release_date)}</td>
+                    <td>
+                        <strong>${release.product_name}</strong>
+                        <br><small class="text-muted">${
+                          release.quantity
+                        } کلو</small>
+                    </td>
+                    <td>${release.quantity} کلو</td>
+                    <td>
+                        <div>${release.buyer_name}</div>
+                        <small class="text-muted">${release.buyer_phone}</small>
+                    </td>
+                    <td>${release.destination_city}</td>
+                    <td>
+                        <span class="badge ${getReleaseStatusBadge(
+                          release.status
+                        )}">
+                            ${release.status}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="viewReleaseDetails('${
+                              release.tracking_number
+                            }')" title="تفصیلات">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-outline-success" onclick="updateReleaseStatus('${
+                              release.tracking_number
+                            }', 'پہنچا دیا')" title="پہنچا دیا">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="cancelRelease('${
+                              release.tracking_number
+                            }')" title="منسوخ کریں">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `
+          )
+          .join("");
+      }
+
+      // Update release statistics
+      function updateReleaseStats() {
+        const today = new Date().toDateString();
+        const todayReleases = releases.filter(
+          (release) => new Date(release.release_date).toDateString() === today
+        );
+
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        const weekReleases = releases.filter(
+          (release) => new Date(release.release_date) >= weekStart
+        );
+
+        const pendingTransfers = releases.filter(
+          (release) =>
+            release.status === "منتقلی" || release.status === "جاری شدہ"
+        ).length;
+
+        const totalValue = releases.reduce(
+          (sum, release) => sum + (release.total_value || 0),
+          0
+        );
+
+        document.getElementById("todayReleased").textContent =
+          todayReleases.length;
+        document.getElementById("weekReleased").textContent =
+          weekReleases.length;
+        document.getElementById("pendingTransfers").textContent =
+          pendingTransfers;
+        document.getElementById("totalValue").textContent =
+          totalValue.toLocaleString() + " روپے";
+      }
+
+      // Get release status badge
+      function getReleaseStatusBadge(status) {
+        const statusConfig = {
+          "جاری شدہ": "bg-primary",
+          منتقلی: "bg-info",
+          "پہنچا دیا": "bg-success",
+          منسوخ: "bg-danger",
+        };
+        return statusConfig[status] || "bg-secondary";
+      }
+
+      // Format release date
+      function formatReleaseDate(dateString) {
+        return new Date(dateString).toLocaleDateString("ur-PK", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      // Show release modal
+      async function showReleaseModal() {
+        await loadAvailableItemsForRelease();
+        const modal = new bootstrap.Modal(
+          document.getElementById("releaseGoodsModal")
+        );
+        modal.show();
+      }
+
+      // Load available items for release
+      async function loadAvailableItemsForRelease() {
+        try {
+          const inventory = await window.inventory.getInventory();
+          const availableItems = inventory.filter(
+            (item) => item.status === "available"
+          );
+          const select = document.getElementById("releaseItemSelect");
+
+          select.innerHTML = '<option value="">سامان منتخب کریں</option>';
+
+          availableItems.forEach((item) => {
+            const option = document.createElement("option");
+            option.value = item.id;
+            option.textContent = `${item.product_name} - ${item.farmer_name} (${item.quantity} کلو دستیاب)`;
+            option.setAttribute("data-quantity", item.quantity);
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error loading available items:", error);
+        }
+      }
+
+      // Update available quantity when item is selected
+      document
+        .getElementById("releaseItemSelect")
+        .addEventListener("change", function () {
+          const selectedOption = this.options[this.selectedIndex];
+          const availableQuantity =
+            selectedOption.getAttribute("data-quantity") || 0;
+          document.getElementById("availableQuantity").textContent =
+            availableQuantity;
+          document.getElementById("releaseQuantity").max = availableQuantity;
+        });
+
+      // Submit release form
+      async function submitReleaseForm() {
+        const form = document.getElementById("releaseGoodsForm");
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const itemId = document.getElementById("releaseItemSelect").value;
+        const releaseQuantity = parseInt(
+          document.getElementById("releaseQuantity").value
+        );
+        const buyerName = document.getElementById("buyerName").value;
+        const buyerPhone = document.getElementById("buyerPhone").value;
+        const destinationCity =
+          document.getElementById("destinationCity").value;
+        const releaseDateTime =
+          document.getElementById("releaseDateTime").value;
+        const transportType = document.getElementById("transportType").value;
+        const releaseNotes = document.getElementById("releaseNotes").value;
+
+        try {
+          // Get item details
+          const inventory = await window.inventory.getInventory();
+          const item = inventory.find((i) => i.id == itemId);
+
+          if (!item) {
+            throw new Error("سامان نہیں ملا");
+          }
+
+          if (releaseQuantity > item.quantity) {
+            throw new Error("دستیاب مقدار سے زیادہ مقدار درج نہیں کی جا سکتی");
+          }
+
+          // Generate tracking number
+          const trackingNumber = "TRK" + Date.now();
+
+          // Create release record
+          const releaseRecord = {
+            tracking_number: trackingNumber,
+            item_id: itemId,
+            product_name: item.product_name,
+            farmer_name: item.farmer_name,
+            quantity: releaseQuantity,
+            price_per_kg: item.price_per_kg,
+            total_value: releaseQuantity * item.price_per_kg,
+            buyer_name: buyerName,
+            buyer_phone: buyerPhone,
+            destination_city: destinationCity,
+            release_date: releaseDateTime,
+            transport_type: transportType,
+            notes: releaseNotes,
+            status: "جاری شدہ",
+            created_at: new Date().toISOString(),
+          };
+
+          // Add to releases
+          releases.unshift(releaseRecord);
+          localStorage.setItem("demoReleases", JSON.stringify(releases));
+
+          // Update inventory (reduce quantity or mark as sold if all quantity released)
+          if (releaseQuantity === item.quantity) {
+            await window.inventory.updateInventoryItem(itemId, {
+              status: "sold",
+            });
+          } else {
+            await window.inventory.updateInventoryItem(itemId, {
+              quantity: item.quantity - releaseQuantity,
+            });
+          }
+
+          // Add transaction
+          window.inventory.addTransaction({
+            type: "release",
+            product_name: item.product_name,
+            farmer_name: item.farmer_name,
+            quantity: releaseQuantity,
+            price_per_kg: item.price_per_kg,
+            total_price: releaseQuantity * item.price_per_kg,
+            date: new Date().toISOString(),
+            note: `سامان جاری - ${buyerName}`,
+          });
+
+          // Close modal
+          const modal = bootstrap.Modal.getInstance(
+            document.getElementById("releaseGoodsModal")
+          );
+          modal.hide();
+
+          // Reset form
+          form.reset();
+          const now = new Date();
+          const localDateTime = new Date(
+            now.getTime() - now.getTimezoneOffset() * 60000
+          )
+            .toISOString()
+            .slice(0, 16);
+          document.getElementById("releaseDateTime").value = localDateTime;
+
+          // Reload data
+          loadReleaseHistory();
+          updateReleaseStats();
+
+          showReleaseAlert(
+            `سامان کامیابی سے جاری ہو گیا! ٹریکنگ نمبر: ${trackingNumber}`,
+            "success"
+          );
+        } catch (error) {
+          showReleaseAlert("خرابی: " + error.message, "error");
+        }
+      }
+
+      // View release details
+      function viewReleaseDetails(trackingNumber) {
+        const release = releases.find(
+          (r) => r.tracking_number === trackingNumber
+        );
+        if (release) {
+          const detailsContent = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>بنیادی معلومات</h6>
+                            <p><strong>ٹریکنگ نمبر:</strong> ${
+                              release.tracking_number
+                            }</p>
+                            <p><strong>پروڈکٹ:</strong> ${
+                              release.product_name
+                            }</p>
+                            <p><strong>کسان:</strong> ${release.farmer_name}</p>
+                            <p><strong>مقدار:</strong> ${
+                              release.quantity
+                            } کلو</p>
+                            <p><strong>کل مالیت:</strong> ${
+                              release.total_value
+                            } روپے</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>خریدار کی معلومات</h6>
+                            <p><strong>نام:</strong> ${release.buyer_name}</p>
+                            <p><strong>فون:</strong> ${release.buyer_phone}</p>
+                            <p><strong>منزل:</strong> ${
+                              release.destination_city
+                            }</p>
+                            <p><strong>ٹرانسپورٹ:</strong> ${
+                              release.transport_type || "طے شدہ نہیں"
+                            }</p>
+                            <p><strong>حالت:</strong> <span class="badge ${getReleaseStatusBadge(
+                              release.status
+                            )}">${release.status}</span></p>
+                        </div>
+                    </div>
+                    ${
+                      release.notes
+                        ? `
+                        <div class="mt-3">
+                            <h6>اضافی نوٹس</h6>
+                            <p>${release.notes}</p>
+                        </div>
+                    `
+                        : ""
+                    }
+                    <div class="mt-3">
+                        <small class="text-muted">جاری کی تاریخ: ${formatReleaseDate(
+                          release.release_date
+                        )}</small>
+                    </div>
+                `;
+
+          document.getElementById("releaseDetailsContent").innerHTML =
+            detailsContent;
+          const modal = new bootstrap.Modal(
+            document.getElementById("releaseDetailsModal")
+          );
+          modal.show();
+        }
+      }
+
+      // Update release status
+      function updateReleaseStatus(trackingNumber, newStatus) {
+        const releaseIndex = releases.findIndex(
+          (r) => r.tracking_number === trackingNumber
+        );
+        if (releaseIndex !== -1) {
+          releases[releaseIndex].status = newStatus;
+          releases[releaseIndex].updated_at = new Date().toISOString();
+          localStorage.setItem("demoReleases", JSON.stringify(releases));
+
+          loadReleaseHistory();
+          updateReleaseStats();
+          showReleaseAlert(
+            `حالت کامیابی سے اپ ڈیٹ ہو گئی: ${newStatus}`,
+            "success"
+          );
+        }
+      }
+
+      // Cancel release
+      function cancelRelease(trackingNumber) {
+        if (confirm("کیا آپ واقعی اس سامان کی منتقلی منسوخ کرنا چاہتے ہیں؟")) {
+          const releaseIndex = releases.findIndex(
+            (r) => r.tracking_number === trackingNumber
+          );
+          if (releaseIndex !== -1) {
+            const release = releases[releaseIndex];
+
+            // Return quantity to inventory
+            window.inventory.getInventory().then((inventory) => {
+              const item = inventory.find((i) => i.id == release.item_id);
+              if (item) {
+                window.inventory.updateInventoryItem(release.item_id, {
+                  quantity: item.quantity + release.quantity,
+                  status: "available",
+                });
+              }
+            });
+
+            releases[releaseIndex].status = "منسوخ";
+            releases[releaseIndex].cancelled_at = new Date().toISOString();
+            localStorage.setItem("demoReleases", JSON.stringify(releases));
+
+            loadReleaseHistory();
+            updateReleaseStats();
+            showReleaseAlert("منتقلی کامیابی سے منسوخ ہو گئی", "success");
+          }
+        }
+      }
+
+      // Showing bulk release modal (placeholder)
+      function showBulkReleaseModal() {
+        alert("بَلک جاری کرنے کا فیچر جلد ہی دستیاب ہوگا");
+      }
+
+      // Showing transfer schedule modal (placeholder)
+      function showTransferScheduleModal() {
+        alert("منتقلی شیڈول کرنے کا فیچر جلد ہی دستیاب ہوگا");
+      }
+
+      // Show alert
+      function showReleaseAlert(message, type) {
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+        const mainContent = document.querySelector(".main-content");
+        mainContent.insertBefore(alertDiv, mainContent.firstChild);
+
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>

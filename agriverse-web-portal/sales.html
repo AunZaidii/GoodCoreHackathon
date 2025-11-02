@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فروخت کی تفصیل - AgriVerse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar">
+                <div class="sidebar-brand">
+                    <i class="fas fa-warehouse fa-2x text-success mb-2"></i>
+                    <h5 class="text-white">ایگری ورسے</h5>
+                    <small class="text-light">گودام مینیجمنٹ</small>
+                </div>
+                
+                <ul class="sidebar-nav">
+                    <li><a href="dashboard.html"><i class="fas fa-home"></i> ڈیش بورڈ</a></li>
+                    <li><a href="add-produce.html"><i class="fas fa-plus-circle"></i> نیا سامان درج کریں</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> موجودہ سامان</a></li>
+                    <li><a href="release-goods.html"><i class="fas fa-truck-loading"></i> سامان نکالیں</a></li>
+                    <li><a href="spoiled-goods.html"><i class="fas fa-trash-alt"></i> خراب مال رپورٹ</a></li>
+                    <li><a href="sales.html" class="active"><i class="fas fa-chart-bar"></i> فروخت کی تفصیل</a></li>
+                    <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> لاگ آؤٹ</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 main-content">
+                <!-- Top Bar -->
+                <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-4">
+                    <h4 class="mb-0 text-primary">
+                        <i class="fas fa-chart-bar me-2"></i>فروخت کی تفصیل
+                    </h4>
+                    <div class="btn-group">
+                        <button class="btn btn-outline-primary" onclick="exportSalesData()">
+                            <i class="fas fa-download"></i> ایکسپورٹ
+                        </button>
+                        <button class="btn btn-outline-success" onclick="printSalesReport()">
+                            <i class="fas fa-print"></i> پرنٹ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sales Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>کل فروخت</h6>
+                                        <h3 id="totalSales">0</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>اس مہینہ</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>اوسط فروخت</h6>
+                                        <h3 id="averageSale">0</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-chart-line fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>فی ٹرانزیکشن</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>مقبول پروڈکٹ</h6>
+                                        <h3 id="topProduct">-</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-star fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>سب سے زیادہ فروخت</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>فروخت کی شرح</h6>
+                                        <h3 id="salesRate">0%</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-percentage fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>کامیاب ٹرانزیکشن</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">سے تاریخ</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">تک تاریخ</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">پروڈکٹ</label>
+                                <select class="form-select" id="filterProduct">
+                                    <option value="">تمام پروڈکٹس</option>
+                                    <option value="آلو">آلو</option>
+                                    <option value="گندم">گندم</option>
+                                    <option value="چاول">چاول</option>
+                                    <option value="ٹماٹر">ٹماٹر</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">گودام</label>
+                                <select class="form-select" id="filterWarehouse">
+                                    <option value="">تمام گودام</option>
+                                    <option value="لاہور">لاہور</option>
+                                    <option value="فیصل آباد">فیصل آباد</option>
+                                    <option value="ملتان">ملتان</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button class="btn btn-primary" onclick="loadSalesData()">
+                                    <i class="fas fa-filter"></i> رپورٹ دیکھیں
+                                </button>
+                                <button class="btn btn-outline-secondary" onclick="clearSalesFilters()">
+                                    <i class="fas fa-times"></i> صاف کریں
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Table -->
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">فروخت کی تاریخ</h5>
+                        <div class="text-muted">
+                            <span id="totalSalesRecords">0</span> ٹرانزیکشنز
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ</th>
+                                        <th>پروڈکٹ</th>
+                                        <th>کسان</th>
+                                        <th>مقدار</th>
+                                        <th>قیمت فی کلو</th>
+                                        <th>کل قیمت</th>
+                                        <th>گودام</th>
+                                        <th>عمل</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salesTable">
+                                    <!-- Sales data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="salesEmptyState" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">ابھی تک کوئی فروخت نہیں</h5>
+                            <p class="text-muted">جب آپ سامان فروخت کریں گے تو یہاں نظر آئے گا</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Chart (Placeholder) -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>فروخت کا چارٹ</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                            <h6 class="text-muted">چارٹ فیچر جلد ہی دستیاب ہوگا</h6>
+                            <p class="text-muted">فروخت کے اعداد و شمار کو گرافیکل شکل میں دیکھیں</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/demo-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/inventory.js"></script>
+    
+    <script>
+        // Set default dates
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = today;
+            
+            loadSalesData();
+        });
+
+        // Load sales data
+        async function loadSalesData() {
+            try {
+                const transactions = JSON.parse(localStorage.getItem('demoTransactions') || '[]');
+                const sales = transactions.filter(t => t.type === 'sale');
+                
+                // Apply filters
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const productFilter = document.getElementById('filterProduct').value;
+                const warehouseFilter = document.getElementById('filterWarehouse').value;
+                
+                let filteredSales = sales;
+                
+                if (startDate) {
+                    filteredSales = filteredSales.filter(sale => sale.date >= startDate);
+                }
+                if (endDate) {
+                    filteredSales = filteredSales.filter(sale => sale.date <= endDate + 'T23:59:59');
+                }
+                if (productFilter) {
+                    filteredSales = filteredSales.filter(sale => sale.product_name === productFilter);
+                }
+                if (warehouseFilter) {
+                    // Note: You might need to add warehouse to transaction data
+                    filteredSales = filteredSales.filter(sale => !sale.warehouse || sale.warehouse === warehouseFilter);
+                }
+                
+                updateSalesTable(filteredSales);
+                updateSalesSummary(filteredSales);
+                
+            } catch (error) {
+                console.error('Error loading sales data:', error);
+                showSalesAlert('ڈیٹا لوڈ کرنے میں خرابی', 'error');
+            }
+        }
+
+        // Update sales table
+        function updateSalesTable(sales) {
+            const salesTable = document.getElementById('salesTable');
+            const emptyState = document.getElementById('salesEmptyState');
+            const totalRecords = document.getElementById('totalSalesRecords');
+            
+            if (sales.length === 0) {
+                salesTable.innerHTML = '';
+                if (emptyState) emptyState.style.display = 'block';
+                if (totalRecords) totalRecords.textContent = '0';
+                return;
+            }
+
+            if (emptyState) emptyState.style.display = 'none';
+            if (totalRecords) totalRecords.textContent = sales.length;
+
+            salesTable.innerHTML = sales.map(sale => `
+                <tr>
+                    <td>${formatSalesDate(sale.date)}</td>
+                    <td>
+                        <strong>${sale.product_name}</strong>
+                    </td>
+                    <td>${sale.farmer_name}</td>
+                    <td>${sale.quantity} کلو</td>
+                    <td>${sale.price_per_kg} روپے</td>
+                    <td>
+                        <strong class="text-success">${sale.total_price} روپے</strong>
+                    </td>
+                    <td>${sale.warehouse || 'لاہور'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="viewSaleDetails(${sale.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update sales summary
+        function updateSalesSummary(sales) {
+            const totalSales = sales.reduce((sum, sale) => sum + sale.total_price, 0);
+            const averageSale = sales.length > 0 ? Math.round(totalSales / sales.length) : 0;
+            
+            // Find top product
+            const productCount = {};
+            sales.forEach(sale => {
+                productCount[sale.product_name] = (productCount[sale.product_name] || 0) + sale.quantity;
+            });
+            
+            const topProduct = Object.keys(productCount).reduce((a, b) => 
+                productCount[a] > productCount[b] ? a : b, '-'
+            );
+            
+            // Calculate sales rate (placeholder)
+            const salesRate = sales.length > 0 ? '85%' : '0%';
+
+            document.getElementById('totalSales').textContent = totalSales.toLocaleString() + ' روپے';
+            document.getElementById('averageSale').textContent = averageSale.toLocaleString() + ' روپے';
+            document.getElementById('topProduct').textContent = topProduct;
+            document.getElementById('salesRate').textContent = salesRate;
+        }
+
+        // Format date for sales
+        function formatSalesDate(dateString) {
+            return new Date(dateString).toLocaleDateString('ur-PK', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Clear filters
+        function clearSalesFilters() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('filterProduct').value = '';
+            document.getElementById('filterWarehouse').value = '';
+            loadSalesData();
+        }
+
+        // View sale details
+        function viewSaleDetails(saleId) {
+            const transactions = JSON.parse(localStorage.getItem('demoTransactions') || '[]');
+            const sale = transactions.find(t => t.id == saleId);
+            
+            if (sale) {
+                alert(`
+                    فروخت کی تفصیلات:
+                    
+                    پروڈکٹ: ${sale.product_name}
+                    کسان: ${sale.farmer_name}
+                    مقدار: ${sale.quantity} کلو
+                    قیمت فی کلو: ${sale.price_per_kg} روپے
+                    کل قیمت: ${sale.total_price} روپے
+                    تاریخ: ${formatSalesDate(sale.date)}
+                    ${sale.buyer ? `خریدار: ${sale.buyer}` : ''}
+                `);
+            }
+        }
+
+        // Export sales data
+        function exportSalesData() {
+            alert('ایکسپورٹ فیچر جلد ہی دستیاب ہوگا');
+        }
+
+        // Print sales report
+        function printSalesReport() {
+            window.print();
+        }
+
+        // Show alert
+        function showSalesAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(alertDiv, mainContent.firstChild);
+        }
+    </script>
+</body>
+</html>

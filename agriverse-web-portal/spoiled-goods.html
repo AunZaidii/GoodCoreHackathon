@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خراب مال رپورٹ - AgriVerse</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 sidebar">
+                <div class="sidebar-brand">
+                    <i class="fas fa-warehouse fa-2x text-success mb-2"></i>
+                    <h5 class="text-white">ایگری ورسے</h5>
+                    <small class="text-light">گودام مینیجمنٹ</small>
+                </div>
+                
+                <ul class="sidebar-nav">
+                    <li><a href="dashboard.html"><i class="fas fa-home"></i> ڈیش بورڈ</a></li>
+                    <li><a href="add-produce.html"><i class="fas fa-plus-circle"></i> نیا سامان درج کریں</a></li>
+                    <li><a href="inventory.html"><i class="fas fa-boxes"></i> موجودہ سامان</a></li>
+                    <li><a href="release-goods.html"><i class="fas fa-truck-loading"></i> سامان نکالیں</a></li>
+                    <li><a href="spoiled-goods.html" class="active"><i class="fas fa-trash-alt"></i> خراب مال رپورٹ</a></li>
+                    <li><a href="sales.html"><i class="fas fa-chart-bar"></i> فروخت کی تفصیل</a></li>
+                    <li><a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> لاگ آؤٹ</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 main-content">
+                <!-- Top Bar -->
+                <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded shadow-sm mb-4">
+                    <h4 class="mb-0 text-primary">
+                        <i class="fas fa-trash-alt me-2"></i>خراب مال رپورٹ
+                    </h4>
+                    <button class="btn btn-danger" onclick="showReportSpoiledModal()">
+                        <i class="fas fa-plus"></i> نیا خراب مال رپورٹ کریں
+                    </button>
+                </div>
+
+                <!-- Spoiled Goods Summary -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-danger text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>کل خراب سامان</h6>
+                                        <h3 id="totalSpoiled">0</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-exclamation-triangle fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>اس مہینہ</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>مالی نقصان</h6>
+                                        <h3 id="totalLoss">0</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-rupee-sign fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>کل تخمینہ</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>بحالی کیے گئے</h6>
+                                        <h3 id="recoveredItems">0</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-recycle fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>کھاد/بائیو گیس</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stats-card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>بحالی کی شرح</h6>
+                                        <h3 id="recoveryRate">0%</h3>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-leaf fa-2x opacity-50"></i>
+                                    </div>
+                                </div>
+                                <small>زیر استعمال</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spoiled Goods Table -->
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">خراب سامان کی فہرست</h5>
+                        <div class="text-muted">
+                            <span id="totalSpoiledRecords">0</span> ریکارڈز
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ</th>
+                                        <th>پروڈکٹ</th>
+                                        <th>کسان</th>
+                                        <th>مقدار</th>
+                                        <th>اصل قیمت</th>
+                                        <th>خرابی کی وجہ</th>
+                                        <th>حالت</th>
+                                        <th>عمل</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="spoiledTable">
+                                    <!-- Spoiled goods data will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div id="spoiledEmptyState" class="text-center py-5" style="display: none;">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h5 class="text-success">کوئی خراب سامان نہیں</h5>
+                            <p class="text-muted">ابھی تک کوئی خراب سامان رپورٹ نہیں کیا گیا</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Waste Management Tips -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>فضلہ انتظام کے مشورے</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center p-3">
+                                    <i class="fas fa-seedling fa-2x text-success mb-2"></i>
+                                    <h6>کھاد بنائیں</h6>
+                                    <small class="text-muted">پودوں کے لیے قدرتی کھاد</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3">
+                                    <i class="fas fa-fire fa-2x text-warning mb-2"></i>
+                                    <h6>بائیو گیس</h6>
+                                    <small class="text-muted">توانائی کے لیے گیس پیدا کریں</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3">
+                                    <i class="fas fa-cow fa-2x text-info mb-2"></i>
+                                    <h6>جانوروں کا چارہ</h6>
+                                    <small class="text-muted">مویشیوں کے لیے خوراک</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Spoiled Modal -->
+    <div class="modal fade" id="reportSpoiledModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">خراب مال رپورٹ کریں</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reportSpoiledForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">سامان منتخب کریں *</label>
+                                <select class="form-select" id="spoiledItemSelect" required>
+                                    <option value="">سامان منتخب کریں</option>
+                                    <!-- Items will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">خراب مقدار (کلو) *</label>
+                                <input type="number" class="form-control" id="spoiledQuantity" min="1" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">خرابی کی وجہ *</label>
+                                <select class="form-select" id="spoilageReason" required>
+                                    <option value="">وجہ منتخب کریں</option>
+                                    <option value="طبعی خرابی">طبعی خرابی</option>
+                                    <option value="کیڑے مکوڑے">کیڑے مکوڑے</option>
+                                    <option value="درجہ حرارت">درجہ حرارت</option>
+                                    <option value="ذخیرہ اندوزی">ذخیرہ اندوزی</option>
+                                    <option value="ٹرانسپورٹ">ٹرانسپورٹ</option>
+                                    <option value="دیگر">دیگر</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">تاریخ خرابی *</label>
+                                <input type="date" class="form-control" id="spoilageDate" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">تفصیلی وجہ</label>
+                            <textarea class="form-control" id="spoilageDetails" rows="3" placeholder="خرابی کی مزید تفصیل..."></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">بحالی کا طریقہ</label>
+                            <select class="form-select" id="recoveryMethod">
+                                <option value="">بحالی کا طریقہ منتخب کریں</option>
+                                <option value="کھاد">کھاد میں تبدیل</option>
+                                <option value="بائیو گیس">بائیو گیس</option>
+                                <option value="چارہ">جانوروں کا چارہ</option>
+                                <option value="ضائع">مکمل ضائع</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">منسوخ کریں</button>
+                    <button type="button" class="btn btn-danger" onclick="submitSpoilageReport()">رپورٹ محفوظ کریں</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/demo-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/inventory.js"></script>
+    
+    <script>
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('spoilageDate').valueAsDate = new Date();
+            loadSpoiledGoodsData();
+            loadAvailableItems();
+        });
+
+        // Load spoiled goods data
+        async function loadSpoiledGoodsData() {
+            try {
+                const inventory = JSON.parse(localStorage.getItem('demoInventory') || '[]');
+                const spoiledGoods = inventory.filter(item => item.status === 'spoiled');
+                
+                updateSpoiledTable(spoiledGoods);
+                updateSpoiledSummary(spoiledGoods);
+                
+            } catch (error) {
+                console.error('Error loading spoiled goods:', error);
+                showSpoiledAlert('ڈیٹا لوڈ کرنے میں خرابی', 'error');
+            }
+        }
+
+        // Update spoiled goods table
+        function updateSpoiledTable(spoiledGoods) {
+            const spoiledTable = document.getElementById('spoiledTable');
+            const emptyState = document.getElementById('spoiledEmptyState');
+            const totalRecords = document.getElementById('totalSpoiledRecords');
+            
+            if (spoiledGoods.length === 0) {
+                spoiledTable.innerHTML = '';
+                if (emptyState) emptyState.style.display = 'block';
+                if (totalRecords) totalRecords.textContent = '0';
+                return;
+            }
+
+            if (emptyState) emptyState.style.display = 'none';
+            if (totalRecords) totalRecords.textContent = spoiledGoods.length;
+
+            spoiledTable.innerHTML = spoiledGoods.map(item => `
+                <tr>
+                    <td>${formatSpoiledDate(item.spoiled_date || item.created_at)}</td>
+                    <td>
+                        <strong>${item.product_name}</strong>
+                    </td>
+                    <td>${item.farmer_name}</td>
+                    <td>${item.spoiled_quantity || item.quantity} کلو</td>
+                    <td>${(item.spoiled_quantity || item.quantity) * item.price_per_kg} روپے</td>
+                    <td>${item.spoilage_reason || 'طبعی خرابی'}</td>
+                    <td>
+                        <span class="badge ${getRecoveryStatusBadge(item.recovery_method)}">
+                            ${getRecoveryStatusText(item.recovery_method)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-success" onclick="recoverItem(${item.id})" title="بحال کریں">
+                                <i class="fas fa-recycle"></i>
+                            </button>
+                            <button class="btn btn-outline-danger" onclick="deleteSpoiledItem(${item.id})" title="حذف کریں">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Update spoiled goods summary
+        function updateSpoiledSummary(spoiledGoods) {
+            const totalSpoiled = spoiledGoods.length;
+            const totalLoss = spoiledGoods.reduce((sum, item) => {
+                return sum + ((item.spoiled_quantity || item.quantity) * item.price_per_kg);
+            }, 0);
+            
+            const recoveredItems = spoiledGoods.filter(item => item.recovery_method && item.recovery_method !== 'ضائع').length;
+            const recoveryRate = totalSpoiled > 0 ? Math.round((recoveredItems / totalSpoiled) * 100) : 0;
+
+            document.getElementById('totalSpoiled').textContent = totalSpoiled;
+            document.getElementById('totalLoss').textContent = totalLoss.toLocaleString() + ' روپے';
+            document.getElementById('recoveredItems').textContent = recoveredItems;
+            document.getElementById('recoveryRate').textContent = recoveryRate + '%';
+        }
+
+        // Get recovery status badge
+        function getRecoveryStatusBadge(method) {
+            const statusConfig = {
+                'کھاد': 'bg-success',
+                'بائیو گیس': 'bg-info', 
+                'چارہ': 'bg-warning',
+                'ضائع': 'bg-danger'
+            };
+            return statusConfig[method] || 'bg-secondary';
+        }
+
+        // Get recovery status text
+        function getRecoveryStatusText(method) {
+            const textConfig = {
+                'کھاد': 'کھاد',
+                'بائیو گیس': 'بائیو گیس',
+                'چارہ': 'چارہ',
+                'ضائع': 'ضائع'
+            };
+            return textConfig[method] || 'زیر التوا';
+        }
+
+        // Format date for spoiled goods
+        function formatSpoiledDate(dateString) {
+            return new Date(dateString).toLocaleDateString('ur-PK', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Load available items for reporting
+        async function loadAvailableItems() {
+            try {
+                const inventory = await window.inventory.getInventory();
+                const availableItems = inventory.filter(item => item.status === 'available');
+                const select = document.getElementById('spoiledItemSelect');
+                
+                select.innerHTML = '<option value="">سامان منتخب کریں</option>';
+                
+                availableItems.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = `${item.product_name} - ${item.farmer_name} (${item.quantity} کلو)`;
+                    select.appendChild(option);
+                });
+                
+            } catch (error) {
+                console.error('Error loading available items:', error);
+            }
+        }
+
+        // Show report spoiled modal
+        function showReportSpoiledModal() {
+            loadAvailableItems();
+            const modal = new bootstrap.Modal(document.getElementById('reportSpoiledModal'));
+            modal.show();
+        }
+
+        // Submit spoilage report
+        async function submitSpoilageReport() {
+            const form = document.getElementById('reportSpoiledForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const itemId = document.getElementById('spoiledItemSelect').value;
+            const spoiledQuantity = parseInt(document.getElementById('spoiledQuantity').value);
+            const spoilageReason = document.getElementById('spoilageReason').value;
+            const spoilageDate = document.getElementById('spoilageDate').value;
+            const spoilageDetails = document.getElementById('spoilageDetails').value;
+            const recoveryMethod = document.getElementById('recoveryMethod').value;
+
+            try {
+                // Update inventory item
+                await window.inventory.updateInventoryItem(itemId, {
+                    status: 'spoiled',
+                    spoiled_quantity: spoiledQuantity,
+                    spoilage_reason: spoilageReason,
+                    spoiled_date: spoilageDate,
+                    spoilage_details: spoilageDetails,
+                    recovery_method: recoveryMethod || 'ضائع'
+                });
+
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('reportSpoiledModal'));
+                modal.hide();
+
+                // Reset form
+                form.reset();
+                document.getElementById('spoilageDate').valueAsDate = new Date();
+
+                // Reload data
+                loadSpoiledGoodsData();
+                
+                showSpoiledAlert('خراب مال کامیابی سے رپورٹ ہو گیا', 'success');
+                
+            } catch (error) {
+                showSpoiledAlert('خرابی: ' + error.message, 'error');
+            }
+        }
+
+        // Recover item (convert to compost, biogas, etc.)
+        async function recoverItem(itemId) {
+            if (confirm('کیا آپ اس سامان کو بحال کرنا چاہتے ہیں؟')) {
+                try {
+                    await window.inventory.updateInventoryItem(itemId, {
+                        recovery_method: 'کھاد',
+                        recovered_at: new Date().toISOString()
+                    });
+                    
+                    loadSpoiledGoodsData();
+                    showSpoiledAlert('سامان کامیابی سے بحال ہو گیا', 'success');
+                    
+                } catch (error) {
+                    showSpoiledAlert('خرابی: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Delete spoiled item
+        async function deleteSpoiledItem(itemId) {
+            if (confirm('کیا آپ واقعی اس ریکارڈ کو حذف کرنا چاہتے ہیں؟')) {
+                try {
+                    await window.inventory.deleteInventoryItem(itemId);
+                    loadSpoiledGoodsData();
+                    showSpoiledAlert('ریکارڈ کامیابی سے حذف ہو گیا', 'success');
+                } catch (error) {
+                    showSpoiledAlert('خرابی: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Show alert
+        function showSpoiledAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            const mainContent = document.querySelector('.main-content');
+            mainContent.insertBefore(alertDiv, mainContent.firstChild);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
